@@ -1,0 +1,22 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import xarray as xr
+plt.ion()
+
+# Download https://opendata.dwd.de/climate_environment/REA/ICON-DREAM-EU/invariant/ICON-DREAM-EU_grid.nc
+grid = xr.open_dataset("ICON-DREAM-EU_grid.nc")
+# Download https://opendata.dwd.de/climate_environment/REA/ICON-DREAM-EU/monthly/T_2M/ICON-DREAM-EU_201001_T_2M_monavg.grb
+ds = xr.open_dataset("ICON-DREAM-EU_201001_T_2M_monavg.grb", engine="cfgrib")
+
+# print the data to explore the variable names
+print(ds)
+
+lon = np.rad2deg(grid.cell.clon) # center longitude converted from radians to degrees
+lat = np.rad2deg(grid.cell.clat) # same for center latitude
+
+# basic plotting
+fig, ax = plt.subplots(  figsize=(12, 8))
+plt.tricontourf(lon, lat ,ds.avg_2t.values,levels=13, tri=True,cmap=plt.cm.jet)
+plt.colorbar()
+plt.title("2-meter temperature: "+pd.to_datetime(ds.avg_2t.time.values).strftime("%Y-%m"))
